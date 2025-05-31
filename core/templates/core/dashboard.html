@@ -64,6 +64,11 @@
                     <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#comments-{{ task.id }}">💬 Comments</button>
                 </div>
             </div>
+            {% if task.changes_description %}
+    <div class="alert alert-warning mt-3 ms-2">
+        <strong>Admin Review Comment:</strong> {{ task.changes_description }}
+    </div>
+{% endif %}
 
             <!-- Collapsible Comments Section -->
             <div class="collapse mt-3" id="comments-{{ task.id }}">

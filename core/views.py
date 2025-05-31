@@ -145,19 +145,31 @@ def review_task(request, task_id):
         return redirect('submitted_tasks')
 
     return render(request, 'core/review_task.html', {'task': task})
+
+
+@login_required
 def verify_task(request, task_id):
     task = get_object_or_404(Task, id=task_id)
 
+    if not request.user.is_staff:
+        messages.error(request, "Unauthorized access.")
+        return redirect('dashboard')
+
     if request.method == 'POST':
-        action = request.POST.get('action')
-        if action == 'accept':
-            task.is_verified = True
+        decision = request.POST.get('decision')
+        comment = request.POST.get('comment', '').strip()
+
+        if decision == 'accept':
+            task.status = 'VERIFIED'
             task.changes_description = ''
-            task.save()
-        elif action == 'reject':
-            task.is_verified = False
-            task.changes_description = request.POST.get('changes_description', '')
-            task.save()
+            task.submitted_for_review = False
+        elif decision == 'reject':
+            task.status = 'REJECTED'
+            task.changes_description = comment
+            task.submitted_for_review = False
+
+        task.save()
+        messages.success(request, f"Task '{task.title}' has been {decision}ed.")
         return redirect('submitted_tasks')
-    
+
     return redirect('dashboard')

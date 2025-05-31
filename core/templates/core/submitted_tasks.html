@@ -19,15 +19,17 @@
                 <h5 class="card-title">{{ task.title }}</h5>
                 <p class="card-text">{{ task.description }}</p>
                 <p><strong>Final Description:</strong> {{ task.final_description }}</p>
-                <p><strong>Assigned To:</strong> {{ task.assigned_to.username }}</p>
                 <form method="post" action="{% url 'verify_task' task.id %}">
                     {% csrf_token %}
-                    <button type="submit" name="action" value="accept" class="btn btn-success">✅ Accept</button>
-                    <button type="button" class="btn btn-danger" data-bs-toggle="collapse" data-bs-target="#request-changes-{{ task.id }}">❌ Request Changes</button>
-
-                    <div class="collapse mt-2" id="request-changes-{{ task.id }}">
-                        <textarea name="final_description" class="form-control mb-2" placeholder="Describe required changes..." required></textarea>
-                        <button type="submit" name="action" value="reject" class="btn btn-warning">Submit Changes</button>
+                    <div class="mb-2">
+                        <button type="submit" name="decision" value="accept" class="btn btn-sm btn-success me-2">✅ Accept</button>
+                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="collapse" data-bs-target="#reject-{{ task.id }}">❌ Reject</button>
+                    </div>
+                
+                    <!-- Rejection Comment -->
+                    <div class="collapse" id="reject-{{ task.id }}">
+                        <textarea name="comment" class="form-control form-control-sm mt-2" rows="2" placeholder="Reason for rejection..." required></textarea>
+                        <button type="submit" name="decision" value="reject" class="btn btn-sm btn-danger mt-1">Confirm Reject</button>
                     </div>
                 </form>
             </div>
