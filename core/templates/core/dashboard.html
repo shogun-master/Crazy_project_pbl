@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if user.is_staff %}
+    <div class="d-flex justify-content-end mb-3">
+        <a href="{% url 'create_task' %}" class="btn btn-success">+ Create Task</a>
+    </div>
+    {% endif %}
+
+    <h3 class="mb-4 text-center text-primary">Your Tasks</h3>
+
+    {% for status, task_list in grouped_tasks.items %}
+    <h4 class="mt-4 text-info">{{ status|title }}</h4>
+    <ul class="list-group mb-4">
+        {% for task in task_list %}
+        <li class="list-group-item">
+            <div class="d-flex justify-content-between align-items-start flex-column flex-md-row">
+                <div>
+                    <h5 class="mb-1">{{ task.title }}</h5>
+                    {% if task.description %}
+                        <p class="mb-1 text-muted">{{ task.description|truncatechars:120 }}</p>
+                    {% endif %}
+                    <p class="mb-1">
+                        <strong>Deadline:</strong> {{ task.deadline|date:"M d, Y H:i" }}
+                        {% if task.deadline and task.deadline < now %}
+                        <span class="text-danger ms-2">⚠ Overdue!</span>
+                        {% endif %}
+                    </p>
+                    {% if user.is_staff %}
+                        <p class="mb-1 text-secondary"><small>Assigned to: {{ task.assigned_to.username }}</small></p>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex flex-column gap-2">
+
+                    {% if not user.is_staff %}
+                        <!-- Status dropdown for non-admins -->
+                        <form method="post" action="{% url 'update_status' task.id %}">
+                            {% csrf_token %}
+                            <div class="input-group">
+                                <select name="status" class="form-select form-select-sm" {% if task.submitted_for_review %}disabled{% endif %}>
+                                    <option value="PENDING" {% if task.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                                    <option value="IN_PROGRESS" {% if task.status == 'IN_PROGRESS' %}selected{% endif %}>In Progress</option>
+                                    <option value="COMPLETED" {% if task.status == 'COMPLETED' %}selected{% endif %}>Completed</option>
+                                </select>
+                                {% if not task.submitted_for_review %}
+                                <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                                {% endif %}
+                            </div>
+                        </form>
+
+                        {% if task.status == 'COMPLETED' and not task.submitted_for_review %}
+                            <a href="{% url 'submit_for_review' task.id %}" class="btn btn-sm btn-warning">Submit for Review</a>
+                        {% elif task.submitted_for_review %}
+                            <span class="text-info mt-1">Awaiting admin verification...</span>
+                        {% endif %}
+                    {% endif %}
+
+                    <!-- Comment toggle button -->
+                    <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#comments-{{ task.id }}">💬 Comments</button>
+                </div>
+            </div>
+
+            <!-- Collapsible Comments Section -->
+            <div class="collapse mt-3" id="comments-{{ task.id }}">
+                <h6 class="ms-2">Comments:</h6>
+                {% for comment in task.comments.all %}
+                    <div class="ms-4 mt-1 border-start ps-2">
+                        <strong>{{ comment.author.username }}</strong>: {{ comment.content }}
+                        <small class="text-muted">({{ comment.created_at|date:"Y-m-d H:i" }})</small>
+                    </div>
+                {% empty %}
+                    <div class="ms-4 text-muted">No comments yet.</div>
+                {% endfor %}
+
+                <!-- Add Comment Form -->
+                <form method="post" action="{% url 'add_comment' task.id %}" class="mt-2 ms-4">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" name="content" class="form-control form-control-sm" placeholder="Add a comment..." required>
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Post</button>
+                    </div>
+                </form>
+            </div>
+        </li>
+        {% empty %}
+        <li class="list-group-item">No tasks in this category.</li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+</div>
+{% endblock %}

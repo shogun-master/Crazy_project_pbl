@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QA Tester Dashboard</title>
+</head>
+<body>
+    <h1>QA Tester Dashboard</h1>
+    <p>Welcome, {{ request.user.username }}</p>
+    <p>Check and manage testing tasks here.</p>
+    <a href="{% url 'logout' %}">Logout</a>
+</body>
+</html>
