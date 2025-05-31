@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group
 from django.contrib import messages
 
-from .models import Task
+from .models import Task, User
 from .forms import CommentForm, TaskForm, LoginForm, FinalSubmissionForm
 
 
@@ -61,11 +61,24 @@ def create_task(request):
         if form.is_valid():
             form.save()
             return redirect('dashboard')
+        else:
+            print("Form Errors:", form.errors)
     else:
         form = TaskForm()
-    return render(request, 'core/create_task.html', {'form': form})
+    
+    return render(request, 'core/create_task.html', {
+        'form': form,
+        'users': User.objects.all()  # Make sure this is passed
+    })
 
-
+def add_comment(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    if request.method == 'POST':
+        comment = request.POST.get('comment')
+        if comment:
+            task.comment = comment  # Assuming 'comment' is a field in your Task model
+            task.save()
+    return redirect('dashboard')
 @login_required
 def update_status(request, task_id):
     task = get_object_or_404(Task, id=task_id)
@@ -132,3 +145,19 @@ def review_task(request, task_id):
         return redirect('submitted_tasks')
 
     return render(request, 'core/review_task.html', {'task': task})
+def verify_task(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'accept':
+            task.is_verified = True
+            task.changes_description = ''
+            task.save()
+        elif action == 'reject':
+            task.is_verified = False
+            task.changes_description = request.POST.get('changes_description', '')
+            task.save()
+        return redirect('submitted_tasks')
+    
+    return redirect('dashboard')

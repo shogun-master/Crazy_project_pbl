@@ -36,9 +36,7 @@
             </ul>
         </div>
     </nav>
-    {% if user.is_staff %}
-    <a class="nav-link text-black bg-warning" href="{% url 'submitted_tasks' %}">📋 Review Submitted Tasks</a>
-    {% endif %}
+
     
     <div class="container py-4">
         {% block content %}{% endblock %}
