@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Backend Developer Dashboard</title>
+</head>
+<body>
+    <h1>Backend Developer Dashboard</h1>
+    <p>Welcome, {{ request.user.username }}</p>
+    <p>View and update your backend tasks here.</p>
+    <a href="{% url 'logout' %}">Logout</a>
+</body>
+</html>

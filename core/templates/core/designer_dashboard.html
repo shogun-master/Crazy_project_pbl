@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Designer Dashboard</title>
+</head>
+<body>
+    <h1>Designer Dashboard</h1>
+    <p>Welcome, {{ request.user.username }}</p>
+    <p>Access and track your design-related tasks here.</p>
+    <a href="{% url 'logout' %}">Logout</a>
+</body>
+</html>
