@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    <p>Welcome, {{ request.user.username }} (Admin)</p>
+    <ul>
+        <li><a href="#">Create Task</a></li>
+        <li><a href="#">Manage Users</a></li>
+        <li><a href="#">View All Tasks</a></li>
+    </ul>
+    <a href="{% url 'logout' %}">Logout</a>
+</body>
+</html>
