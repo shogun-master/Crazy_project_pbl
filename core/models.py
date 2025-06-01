@@ -31,7 +31,9 @@ class Task(models.Model):
     is_verified = models.BooleanField(default=False)
     review_status = models.CharField(max_length=20, choices=REVIEW_STATUS_CHOICES, default='NONE')
     final_description = models.TextField(blank=True, null=True)
-
+    comment = models.TextField(blank=True, null=True)
+    final_description = models.TextField(blank=True)
+    changes_description = models.TextField(blank=True) 
     def __str__(self):
         return self.title
 

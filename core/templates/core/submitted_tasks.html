@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Submitted Tasks{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-primary mb-4">📋 Submitted Tasks for Review</h3>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% for task in tasks %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ task.title }}</h5>
+                <p class="card-text">{{ task.description }}</p>
+                <p><strong>Final Description:</strong> {{ task.final_description }}</p>
+                <form method="post" action="{% url 'verify_task' task.id %}">
+                    {% csrf_token %}
+                    <div class="mb-2">
+                        <button type="submit" name="decision" value="accept" class="btn btn-sm btn-success me-2">✅ Accept</button>
+                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="collapse" data-bs-target="#reject-{{ task.id }}">❌ Reject</button>
+                    </div>
+                
+                    <!-- Rejection Comment -->
+                    <div class="collapse" id="reject-{{ task.id }}">
+                        <textarea name="comment" class="form-control form-control-sm mt-2" rows="2" placeholder="Reason for rejection..." required></textarea>
+                        <button type="submit" name="decision" value="reject" class="btn btn-sm btn-danger mt-1">Confirm Reject</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% empty %}
+        <div class="alert alert-info">No submitted tasks to review.</div>
+    {% endfor %}
+</div>
+{% endblock %}

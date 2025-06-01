@@ -7,9 +7,44 @@
         <h2 class="text-center text-success mb-4">Create a New Task</h2>
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+            
+            <div class="mb-3">
+                <label for="title" class="form-label">Title:</label>
+                <input type="text" name="title" class="form-control" required>
+            </div>
+        
+            <div class="mb-3">
+                <label for="description" class="form-label">Description:</label>
+                <textarea name="description" class="form-control" rows="3"></textarea>
+            </div>
+        
+            <div class="mb-3">
+                <label for="assigned_to" class="form-label">Assign To:</label>
+                <select name="assigned_to" class="form-select" required>
+                    {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        
+            <!-- Deadline with Flatpickr -->
+            <div class="mb-3">
+                <label for="deadline" class="form-label">Deadline:</label>
+                <input type="text" name="deadline" class="form-control" id="deadline" required>
+            </div>
+        
             <button type="submit" class="btn btn-primary">Create Task</button>
         </form>
     </div>
 </div>
+
+<!-- Flatpickr scripts -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    flatpickr("#deadline", {
+        enableTime: true,
+        dateFormat: "Y-m-d\\TH:i",
+    });
+</script>
 {% endblock %}
