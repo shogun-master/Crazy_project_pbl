@@ -1,0 +1,36 @@
+Admin:
+
+Email: admin@gmail.com
+Password: admin123
+Frontend Developers:
+
+Sarah Johnson
+Email: sarah.j@gmail.com
+Password: frontend123
+Michael Chen
+Email: michael.c@gmail.com
+Password: frontend123
+Backend Developers:
+
+David Smith
+Email: david.s@gmail.com
+Password: backend123
+Emily Brown
+Email: emily.b@gmail.com
+Password: backend123
+Designers:
+
+Sophie Turner
+Email: sophie.t@gmail.com
+Password: design123
+Alex Rivera
+Email: alex.r@gmail.com
+Password: design123
+QA Testers:
+
+James Wilson
+Email: james.w@gmail.com
+Password: testing123
+Lisa Anderson
+Email: lisa.a@gmail.com
+Password: testing123
