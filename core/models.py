@@ -18,6 +18,11 @@ class Task(models.Model):
         ('VERIFIED', 'Verified'),
         ('REJECTED', 'Rejected'),
     ]
+    PRIORITY_CHOICES = [
+        ('Low', 'Low'),
+        ('Medium', 'Medium'),
+        ('High', 'High'),
+    ]
 
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -25,6 +30,7 @@ class Task(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     created_at = models.DateTimeField(auto_now_add=True)
     deadline = models.DateTimeField(null=True, blank=True)
+    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='Medium')
 
     # Submission and Review
     submitted_for_review = models.BooleanField(default=False)
@@ -42,3 +48,11 @@ class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()  # ✅ This is the actual field name
     created_at = models.DateTimeField(auto_now_add=True)
+class TaskLog(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='logs')
+    changed_by = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    action = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.timestamp} - {self.action}"

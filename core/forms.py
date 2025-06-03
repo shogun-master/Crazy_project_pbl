@@ -11,10 +11,12 @@ class LoginForm(forms.Form):
     email = forms.CharField(label="Email")
     password = forms.CharField(widget=forms.PasswordInput)
 
+from django import forms
+from .models import Task
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['title', 'description', 'assigned_to', 'deadline']
+        fields = ['title', 'description', 'status', 'assigned_to', 'priority']
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment

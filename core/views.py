@@ -8,9 +8,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
 from .models import Task, User,Comment
-from .forms import CommentForm, TaskForm, LoginForm, FinalSubmissionForm
+from .forms import CommentForm, TaskForm, LoginForm, FinalSubmissionForm # type: ignore
 
-
+from .models import TaskLog
 def logout_view(request):
     logout(request)
     return redirect('login')
@@ -162,3 +162,5 @@ def review_task(request, task_id):
 
 
 
+def log_task_action(task, user, action):
+    TaskLog.objects.create(task=task, changed_by=user, action=action)
