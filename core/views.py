@@ -3,7 +3,6 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import Group
 from django.contrib import messages
 
 from .models import Task, User
@@ -68,17 +67,20 @@ def create_task(request):
     
     return render(request, 'core/create_task.html', {
         'form': form,
-        'users': User.objects.all()  # Make sure this is passed
+        'users': User.objects.all()
     })
 
+
+@login_required
 def add_comment(request, task_id):
     task = get_object_or_404(Task, id=task_id)
     if request.method == 'POST':
-        comment = request.POST.get('comment')
-        if comment:
-            task.comment = comment  # Assuming 'comment' is a field in your Task model
-            task.save()
+        content = request.POST.get('content')
+        if content:
+            task.comment.create(author=request.user, content=content)
     return redirect('dashboard')
+
+
 @login_required
 def update_status(request, task_id):
     task = get_object_or_404(Task, id=task_id)
@@ -118,6 +120,7 @@ def submitted_tasks(request):
     return render(request, 'core/submitted_tasks.html', {'tasks': tasks})
 
 
+
 @login_required
 def review_task(request, task_id):
     if not request.user.is_staff:
@@ -127,49 +130,23 @@ def review_task(request, task_id):
 
     if request.method == 'POST':
         decision = request.POST.get('decision')
-        final_desc = request.POST.get('final_description')
+        feedback = request.POST.get('final_description', '').strip()
 
-        task.final_description = final_desc
+        task.final_description = feedback
 
         if decision == 'accept':
+            task.status = 'VERIFIED'
             task.review_status = 'VERIFIED'
             task.submitted_for_review = False
-            messages.success(request, 'Task verified successfully.')
+            messages.success(request, f"Task '{task.title}' has been verified successfully.")
         elif decision == 'reject':
+            task.status = 'IN_PROGRESS'
             task.review_status = 'REJECTED'
             task.submitted_for_review = False
-            task.status = 'IN_PROGRESS'
-            messages.warning(request, 'Task rejected with feedback.')
+            messages.warning(request, f"Task '{task.title}' has been rejected. User will revise it.")
 
         task.save()
         return redirect('submitted_tasks')
 
     return render(request, 'core/review_task.html', {'task': task})
 
-
-@login_required
-def verify_task(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
-
-    if not request.user.is_staff:
-        messages.error(request, "Unauthorized access.")
-        return redirect('dashboard')
-
-    if request.method == 'POST':
-        decision = request.POST.get('decision')
-        comment = request.POST.get('comment', '').strip()
-
-        if decision == 'accept':
-            task.status = 'VERIFIED'
-            task.changes_description = ''
-            task.submitted_for_review = False
-        elif decision == 'reject':
-            task.status = 'REJECTED'
-            task.changes_description = comment
-            task.submitted_for_review = False
-
-        task.save()
-        messages.success(request, f"Task '{task.title}' has been {decision}ed.")
-        return redirect('submitted_tasks')
-
-    return redirect('dashboard')
