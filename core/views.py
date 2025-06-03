@@ -18,9 +18,6 @@ def logout_view(request):
 from django.shortcuts import render, get_object_or_404
 from .models import Task
 
-def task_detail(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
-    return render(request, 'core/dashboard.html', {'task': task})
 
 @login_required
 def dashboard_view(request):
@@ -164,6 +161,4 @@ def review_task(request, task_id):
     return render(request, 'core/review_task.html', {'task': task})
 
 
-def task_view(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
-    return render(request, 'core/dashboard.html', {'task': task})
+
