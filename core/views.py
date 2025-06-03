@@ -69,18 +69,19 @@ def create_task(request):
         'form': form,
         'users': User.objects.all()
     })
-
-
 @login_required
 def add_comment(request, task_id):
     task = get_object_or_404(Task, id=task_id)
-    if request.method == 'POST':
-        comment = request.POST.get('comment')
-        if comment:
-            task.comment = comment  # Assuming 'comment' is a field in your Task model
-            task.save()
-    return redirect('dashboard')
 
+    if request.method == 'POST':
+        content = request.POST.get('comment')
+        if content:
+            task.comments.create(author=request.user, content=content)
+            messages.success(request, "Comment added.")
+        else:
+            messages.warning(request, "Comment cannot be empty.")
+
+    return redirect('dashboard')
 
 
 @login_required
