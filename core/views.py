@@ -75,10 +75,12 @@ def create_task(request):
 def add_comment(request, task_id):
     task = get_object_or_404(Task, id=task_id)
     if request.method == 'POST':
-        content = request.POST.get('content')
-        if content:
-            task.comment.create(author=request.user, content=content)
+        comment = request.POST.get('comment')
+        if comment:
+            task.comment = comment  # Assuming 'comment' is a field in your Task model
+            task.save()
     return redirect('dashboard')
+
 
 
 @login_required

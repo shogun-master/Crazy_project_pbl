@@ -10,6 +10,18 @@
         <a href="{% url 'create_task' %}" class="btn btn-success">+ Create Task</a>
     </div>
     {% endif %}
+    {% for task in tasks %}
+  <div class="task-card">
+    <h3>{{ task.title }}</h3>
+    <p>Status: {{ task.status }}</p>
+    {% if task.review_status == 'REJECTED' %}
+        <p><strong>Admin Feedback:</strong> {{ task.final_description }}</p>
+        <a href="{% url 'submit_for_review' task.id %}">Edit & Resubmit</a>
+    {% elif task.review_status == 'VERIFIED' %}
+        <p><strong>Verified by Admin:</strong> {{ task.final_description }}</p>
+    {% endif %}
+  </div>
+{% endfor %}
 
     <h3 class="mb-4 text-center text-primary">Your Tasks</h3>
 

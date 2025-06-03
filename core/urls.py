@@ -11,7 +11,7 @@ urlpatterns = [
     path('tasks/<int:task_id>/submit/', views.submit_for_review, name='submit_for_review'),
     path('tasks/submitted/', views.submitted_tasks, name='submitted_tasks'),
     # path('verify-task/<int:task_id>/', views.verif, name='verify_task'), 
-    path('admin/tasks/review/<int:task_id>/', views.review_task, name='review_task'),
+    path('tasks/review/<int:task_id>/', views.review_task, name='review_task'),
     
 
     
