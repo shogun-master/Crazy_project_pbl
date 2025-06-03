@@ -18,7 +18,7 @@ class TaskForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ['content']
+        fields = ['content']  # ✅ Must match the field in your model
 
 class FinalSubmissionForm(forms.ModelForm):
     class Meta:

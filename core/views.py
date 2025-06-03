@@ -1,3 +1,5 @@
+from django.shortcuts import render, get_object_or_404
+from .models import Task
 from django.utils import timezone
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -5,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
-from .models import Task, User
+from .models import Task, User,Comment
 from .forms import CommentForm, TaskForm, LoginForm, FinalSubmissionForm
 
 
@@ -13,6 +15,12 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
+from django.shortcuts import render, get_object_or_404
+from .models import Task
+
+def task_detail(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    return render(request, 'core/dashboard.html', {'task': task})
 
 @login_required
 def dashboard_view(request):
@@ -71,17 +79,19 @@ def create_task(request):
     })
 @login_required
 def add_comment(request, task_id):
-    task = get_object_or_404(Task, id=task_id)
-
+    task = Task.objects.get(id=task_id)
     if request.method == 'POST':
-        content = request.POST.get('comment')
-        if content:
-            task.comments.create(author=request.user, content=content)
-            messages.success(request, "Comment added.")
-        else:
-            messages.warning(request, "Comment cannot be empty.")
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.task = task
+            comment.author = request.user  # ✅ This is the missing line
+            comment.save()
+            return redirect('dashboard')
 
-    return redirect('dashboard')
+    else:
+        form = CommentForm()
+    return render(request, 'core/add_comment.html', {'form': form})
 
 
 @login_required
@@ -153,3 +163,7 @@ def review_task(request, task_id):
 
     return render(request, 'core/review_task.html', {'task': task})
 
+
+def task_view(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    return render(request, 'core/dashboard.html', {'task': task})
